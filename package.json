@@ -1,0 +1,15 @@
+{
+  "name": "transaction-feed",
+  "version": "1.0.0",
+  "description": "Transaction feed — Jobtern fullstack assessment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "express": "^4.18.2"
+  }
+}
