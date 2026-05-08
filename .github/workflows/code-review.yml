@@ -1,0 +1,44 @@
+name: Code Review
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    name: Review PR
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'ready-for-review'
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout jobtern-ops
+        uses: actions/checkout@v4
+        with:
+          repository: jobtern/jobtern-ops
+          token: ${{ secrets.JOBTERN_OPS_TOKEN }}
+          path: jobtern-ops
+
+      - name: Run code review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ROLE: ${{ vars.ROLE }}
+          DEADLINE: ${{ vars.DEADLINE }}
+          CANDIDATE_TZ: ${{ vars.CANDIDATE_TZ }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          PR_OWNER: ${{ github.repository_owner }}
+          PR_REPO: ${{ github.event.repository.name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_CREATED_AT: ${{ github.event.pull_request.created_at }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: node jobtern-ops/scripts/review.js
